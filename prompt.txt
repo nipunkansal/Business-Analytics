@@ -1,0 +1,16 @@
+Transform the following tabular data into a detailed, human-readable text format. Ensure that:
+
+Clarity: Present the information in a way that is easy to understand for a general audience.
+Completeness: Include every detail from the table without omitting any data points.
+Structure: Organize the content logically, grouping related information together.
+Intent: Accurately convey the purpose of the data, ensuring no misinterpretation of its meaning.
+Coherence: Ensure the narrative flows naturally, using proper transitions between topics and points.
+For example, instead of listing data mechanically, provide context or descriptions where applicable. Use full sentences and avoid unnecessary technical jargon unless it is essential.
+
+Example Table:
+Product Name	Price (USD)	Availability	Rating (out of 5)	Features
+Laptop A	999.99	In Stock	4.5	Lightweight, Fast
+Laptop B	799.99	Out of Stock	4.2	Budget-friendly
+
+Expected Output:
+The product catalog includes two laptops with distinct features and pricing. Laptop A is priced at $999.99 and is currently in stock. It has a high rating of 4.5 out of 5, with key features including a lightweight design and fast performance. On the other hand, Laptop B, which is more budget-friendly at $799.99, is currently out of stock. It holds a slightly lower rating of 4.2 out of 5 but is appreciated for its affordability.
