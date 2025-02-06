@@ -31,6 +31,7 @@ tools = [
 
 class CustomPromptTemplate(BaseChatPromptTemplate):
     template: str
+    input_variables: List[str] = ["input", "tools", "tool_names", "agent_scratchpad"]
 
     def format_messages(self, **kwargs) -> str:
         intermediate_steps = kwargs.pop("intermediate_steps")
