@@ -54,6 +54,10 @@ class CustomAgent(BaseSingleActionAgent):
         self.llm_chain = llm_chain
 
     @property
+    def tools(self) -> List[Any]:  # Expose tools via a property
+        return self._tools
+
+    @property
     def input_keys(self):
         return ["input"]
 
