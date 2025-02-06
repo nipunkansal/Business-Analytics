@@ -49,17 +49,21 @@ prompt = CustomPromptTemplate(
 )
 
 class CustomAgent(BaseSingleActionAgent):
+    def __init__(self, tools, llm_chain):
+        self.tools = tools
+        self.llm_chain = llm_chain
+
     @property
     def input_keys(self):
         return ["input"]
 
     def plan(self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any) -> Union[AgentAction, AgentFinish]:
-        # Implement your custom logic to decide the next action
-        # For simplicity, let's assume the agent always uses the first tool
-        return AgentAction(tool="Search", tool_input=kwargs["input"], log="")
+        thought = self.llm_chain.run(**kwargs)
+        action = AgentAction(tool="Search", tool_input=kwargs["input"], log=thought)
+        return action
 
     async def aplan(self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any) -> Union[AgentAction, AgentFinish]:
-        return self.plan(intermediate_steps, **kwargs)
+        raise NotImplementedError("Async not implemented")
 
 agent = CustomAgent()
 
