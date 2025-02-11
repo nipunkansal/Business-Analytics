@@ -1,96 +1,15 @@
-from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
-from langchain.prompts import BaseChatPromptTemplate
-from langchain.schema import AgentAction, AgentFinish, HumanMessage, SystemMessage
-from langchain.chat_models import ChatOpenAI
-from langchain.tools import DuckDuckGoSearchRun, WikipediaQueryRun
-from langchain.utilities import WikipediaAPIWrapper
-from typing import List, Union
-import re
+You should use the following format:
 
-# Define a search tool
-search = DuckDuckGoSearchRun()
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat multiple times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
 
-# Define a Wikipedia tool
-wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
-
-# List of tools
-tools = [
-    Tool(
-        name="Search",
-        func=search.run,
-        description="Useful for answering questions about current events or unknown topics."
-    ),
-    Tool(
-        name="Wikipedia",
-        func=wikipedia.run,
-        description="Useful for answering factual or historical questions."
-    )
-]
-
-# Custom prompt template
-class CustomPromptTemplate(BaseChatPromptTemplate):
-    template: str
-
-    def format_messages(self, **kwargs) -> List[HumanMessage]:
-        # Format the prompt with the input and tools
-        intermediate_steps = kwargs.pop("intermediate_steps", [])
-        thoughts = ""
-        for action, observation in intermediate_steps:
-            thoughts += f"{action.log}\nObservation: {observation}\nThought: "
-        kwargs["agent_scratchpad"] = thoughts
-        formatted_prompt = self.template.format(**kwargs)
-        return [HumanMessage(content=formatted_prompt)]
-
-# Define the prompt
-template = """You are a helpful AI assistant. Use the following tools to answer the user's question:
-
-Tools:
-{tools}
+Begin!
 
 Question: {input}
-
-{agent_scratchpad}"""
-
-prompt = CustomPromptTemplate(
-    template=template,
-    tools=tools
-)
-
-class CustomOutputParser(AgentOutputParser):
-    def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
-        # Check if the agent should finish
-        if "Final Answer:" in llm_output:
-            return AgentFinish(
-                return_values={"output": llm_output.split("Final Answer:")[-1].strip()},
-                log=llm_output
-            )
-
-        # Otherwise, parse the action and action input
-        regex = r"Action: (.*?)\nAction Input: (.*?)$"
-        match = re.search(regex, llm_output, re.DOTALL)
-        if not match:
-            raise ValueError(f"Could not parse LLM output: `{llm_output}`")
-        action = match.group(1).strip()
-        action_input = match.group(2).strip()
-        return AgentAction(tool=action, tool_input=action_input, log=llm_output)
-
-output_parser = CustomOutputParser()
-
-llm = ChatOpenAI(model="gpt-4", temperature=0)
-
-agent = LLMSingleActionAgent(
-    llm=llm,
-    prompt=prompt,
-    tools=tools,
-    output_parser=output_parser
-)
-
-agent_executor = AgentExecutor.from_agent_and_tools(
-    agent=agent,
-    tools=tools,
-    verbose=True
-)
-
-response = agent_executor.run("What is the capital of France?")
-print(response)
-
+Thought:
