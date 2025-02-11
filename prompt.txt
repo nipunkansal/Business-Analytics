@@ -1,3 +1,7 @@
+Answer the following questions as best you can. You have access to the following tools:
+
+{tool_names}
+
 You should use the following format:
 
 Question: the input question you must answer
